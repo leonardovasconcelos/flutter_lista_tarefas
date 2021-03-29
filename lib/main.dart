@@ -79,26 +79,41 @@ class _HomeState extends State<Home> {
             child: ListView.builder(
                 padding: EdgeInsets.only(top: 10.0),
                 itemCount: _toDoList.length,//espaço para a lista não ficar colada na linha
-                itemBuilder: (context, index){
-                  return CheckboxListTile(
-                    title: Text(_toDoList[index]["title"]),
-                    value: _toDoList[index]["ok"],
-                    secondary: CircleAvatar(
-                      child: Icon(_toDoList[index]["ok"]?
-                      Icons.check : Icons.error) ,),
-                    onChanged: (c){
-                      setState(() {
-                        _toDoList[index]["ok"] = c;
-                        _saveData();
-                      });
-                    },
-                  );
-                }),
+                itemBuilder: buildItem),
           ),
         ],
       ),
     );
   }
+
+  Widget buildItem(context, index){
+    return Dismissible( // o dismissible é o item que vai permitir deletar o item arrastando para a direita
+      key: Key(DateTime.now().millisecondsSinceEpoch.toString()),
+      background: Container(
+        color: Colors.red, // deixa em vermelho
+        child: Align(
+          alignment: Alignment(-0.9, 0.0),
+          child: Icon(Icons.delete, color: Colors.white), // icone de lixeira
+        ),
+      ),
+      direction: DismissDirection.startToEnd,
+      child:   CheckboxListTile(
+        title: Text(_toDoList[index]["title"]),
+        value: _toDoList[index]["ok"],
+        secondary: CircleAvatar(
+          child: Icon(_toDoList[index]["ok"]?
+          Icons.check : Icons.error) ,),
+        onChanged: (c){
+          setState(() {
+            _toDoList[index]["ok"] = c;
+            _saveData();
+          });
+        },
+      ),
+    );
+  }
+
+
 
   Future<File> _getFile() async{
     final directory = await getApplicationDocumentsDirectory(); // Essa função vai pegar o diretório onde eu posso armazenar os documentos do meu App
